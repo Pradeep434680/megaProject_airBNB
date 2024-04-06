@@ -1,0 +1,77 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+    <br><br>
+    <div class="row"> 
+        <div class="col-8 offset-2"> 
+    <h2>Create new listing</h2>
+     
+    <form action="/listings" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">enter title :</label>
+            <input 
+             type="text"
+             placeholder="enter title"
+            name="listing[title]" 
+            class="form-control">
+        </div>
+        
+         
+         <div class="mb-3">
+            <label for="description" class="form-label">enter description :</label>
+         <textarea 
+                 type="text" 
+                 class="form-control" 
+                 placeholder="enter description" 
+                 name="listing[description]">
+             </textarea>
+        
+         </div> 
+         
+         
+    <div class="row">
+        <div class="mb-3 col-md-4">
+            <label for="price"  class="form-label">enter price</label>
+            <input 
+            type="number" 
+            placeholder="enter price" 
+            name="listing[price]"
+            class="form-control" >
+        </div>
+        <div class="mb-3 col-md-8">
+
+            <label for="country" class="form-label">enter country :</label>
+            <input 
+            type="text" 
+            placeholder="enter country" 
+            name="listing[country] "
+            class="form-control">
+        </div>
+         
+        
+    </div>
+        <div class="mb-3">
+              
+        <label for="location"  class="form-label">enter location :</label>
+        <input 
+        type="text" 
+        placeholder="enter location"
+         name="listing[location]"
+         class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="image"  class="form-label">enter image URL/link :</label>
+            <input 
+            type="text" 
+            placeholder="enter image URL" 
+            name="listing[image] "
+            class="form-control">
+        </div>
+      
+        
+        <button class="btn btn-dark add-btn">Add</button>
+        <br><br>
+    </form>
+ </div>
+</div>
+</body>
+ 
