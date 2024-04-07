@@ -5,25 +5,21 @@
         <div class="col-8 offset-2"> 
     <h2>Create new listing</h2>
      
-    <form action="/listings" method="post">
+    <form action="/listings" method="post" novalidate class="needs-validation">
         <div class="mb-3">
             <label for="title" class="form-label">enter title :</label>
             <input 
              type="text"
              placeholder="enter title"
             name="listing[title]" 
-            class="form-control">
+            class="form-control" required>
+             
         </div>
         
          
          <div class="mb-3">
-            <label for="description" class="form-label">enter description :</label>
-         <textarea 
-                 type="text" 
-                 class="form-control" 
-                 placeholder="enter description" 
-                 name="listing[description]">
-             </textarea>
+            <label for="description" class="form-label"  >enter description :</label>
+         <textarea name="listing[description]" class="form-control" required></textarea >
         
          </div> 
          
@@ -35,7 +31,7 @@
             type="number" 
             placeholder="enter price" 
             name="listing[price]"
-            class="form-control" >
+            class="form-control" required >
         </div>
         <div class="mb-3 col-md-8">
 
@@ -44,7 +40,7 @@
             type="text" 
             placeholder="enter country" 
             name="listing[country] "
-            class="form-control">
+            class="form-control" required>
         </div>
          
         
@@ -56,7 +52,7 @@
         type="text" 
         placeholder="enter location"
          name="listing[location]"
-         class="form-control">
+         class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="image"  class="form-label">enter image URL/link :</label>
