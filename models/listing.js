@@ -19,6 +19,13 @@ const listingSchema = new Schema({
   price: Number,
   location: String,
   country: String,
+  //it is additisional for review
+  reviews:[
+    {
+      type:Schema.Types.ObjectId,
+      ref:"Review"
+    }
+  ]
 });
 
 const Listing = mongoose.model("Listing", listingSchema);
