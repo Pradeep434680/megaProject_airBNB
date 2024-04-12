@@ -5,11 +5,14 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsyns.js");
+ 
 const ExpressError= require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+ 
 const Review = require("./models/review.js");
 
+
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js")
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -36,115 +39,27 @@ app.use(express.static(path.join(__dirname,"/public")))
 app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
-//validate for schema
-const validateListing = (req,res,next)=>{
-   
-  let {error} = listingSchema.validate(req.body)   // it will check out Joi schema
-   if( error){
-    let errorMsg = error.details.map((el)=>el.message.join(","));//there are many type of errors to show all type of erros
-     throw new ExpressError(404,errorMsg)                                                            //now we will send errorMsg
-    // throw new ExpressError(404, error)   /// error have a lot info  
-  }                   // details object  is an object
-  else{
-    next()
-  }
-}
 
-//index route
-app.get("/listings",wrapAsync(async (req,res)=>{
-  const allListings= await Listing.find({}) ;
-  res.render("listings/index.ejs",{allListings})
-}))
+app.use("/listings",listings); //it will use /listings route of listings.js
+app.use("/listings/:id/reviews",reviews);
 
 
-//Add new listing
-app.get("/listings/new",(req,res)=>{
-    res.render("listings/new.ejs");
-})
-
-// Show in detail
-app.get("/listings/:id",wrapAsync(async(req,res)=>{
-    let {id} =req.params;
-    const listing= await Listing.findById(id)
-    res.render("listings/show.ejs",{listing})
-}))
-
-app.post("/listings",validateListing,  wrapAsync(async(req,res,next)=>{
-  // if(!req.body.listing){
-  //   throw new ExpressError(400,"please send valid data for listing")
-  // }
-  // it will call validateListing function then moving forward 
-  const newListing= new Listing(req.body.listing);
-      await newListing.save();
-      res.redirect("/listings");
-    })
-  );
-    
-     
-app.get("/listings/:id/edit", wrapAsync(async(req,res)=>{
-  let {id} =req.params;
-  const listing= await Listing.findById(id)
-  res.render("listings/edit.ejs",{listing});
-}))
-
-app.put("/listings/:id",validateListing,wrapAsync(async (req,res)=>{
-  // if(!req.body.listing){
-  //   throw new ExpressError(400,"please send valid data for listing")
-  // }
-    // it will call validateListing function then moving forward 
-
-  let {id} =req.params;
-  await Listing.findByIdAndUpdate(id,{...req.body.listing});
-res.redirect(`/listings/${id}`)
-}))
-
-//delete route
- app.delete("/listings/:id",wrapAsync(async(req,res)=>{
-  let {id} =req.params;
-   const deletedListing= await Listing.findByIdAndDelete(id);
-   
-   res.redirect("/listings")
- }))
-
- //Review route
- //when we go on /listings/:id ==> we reach on show.ejs
- // And we will see all reviews on the show.ejs so the route will /listings/:id/reviews
-app.post("/listings/:id/reviews",async(req,res)=>{
-  let listing =await  Listing.findById(req.params.id); //extract the listing by id
-  let newReview = new Review(req.body.review);  //info from form store i=in newReview
-  console.log(newReview);
-  console.log(listing._id);
-  listing.reviews.push(newReview);
-
-
-  await newReview.save();
-  await listing.save();
-  console.log("review is added");
-  res.redirect( `/listings/${listing._id}`);
-})
- 
- // it will be call if above route is not matched
- app.all("*",(req,res,next)=>{
-   next(new ExpressError(404,"page not found"))
-  })
-  app.use((err,req,res,next)=>{
-   let {statusCode=500,message="error"}=err;
-   res.render("error.ejs",{message});
-  // res.status(statusCode).send(message);
+// it will be call if above route is not matched
+app.all("*",(req,res,next)=>{
+  next(new ExpressError(404,"page not found I" ))
  })
+ app.use((err,req,res,next)=>{
+  let {statusCode=500,message="error"}=err;
+  res.render("error.ejs",{message});
+ // res.status(statusCode).send(message);
+})
 //  app.use((err,req,res,next)=>{
 //   res.send("Something went wrong");
 //  })
 app.listen(8080, () => {
-  console.log("server is listening to port 8080");
+ console.log("server is listening to port 8080");
 });
-
-
-
-
-
-
-
+     
 // it is the dbs of addings review
 
 // [
@@ -171,3 +86,22 @@ app.listen(8080, () => {
 //     __v: 0
 //   }
 // ]
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
