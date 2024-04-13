@@ -38,7 +38,7 @@ const validateReview = (req,res,next)=>{
 
     await newReview.save();
     await listing.save();
-   
+    req.flash("success","New Review Created");
     res.redirect( `/listings/${listing._id}`);
   }))
    
@@ -52,6 +52,7 @@ const validateReview = (req,res,next)=>{
       let {id , reviewId} = req.params;
       await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}}) // it will pull the whole object form the reviews array and delete it from database.
       await Review.findByIdAndDelete(reviewId);  //it will delete card
+      req.flash("success","Review Deleted ");
       res.redirect(`/listings/${id}`);
     }));
      

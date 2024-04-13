@@ -5,6 +5,8 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const session = require("express-session");
+const flash = require("connect-flash");
  
 const ExpressError= require("./utils/ExpressError.js");
  
@@ -34,11 +36,38 @@ app.use(methodOverride("_method"));
 app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
  
+const sessionOptions = {
+  secret:"mysupersecretstring", 
+  resave:false,
+  saveUninitialized:true,
+  cookie:{
+    expires: Date.now() + 7*24*60*60*1000,   // it will give a another option in application
+    maxAge: 7 *24*60*60*1000
+  }
+};
 
 // Root route
 app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+//  res.locals.success 
+//
+app.use((req,res,next)=>{
+   res.locals.success = req.flash("success");
+   res.locals.error = req.flash("error");
+  //  console.log(res.locals.success);// if i do not create a new listing the the value of this wil be empty array
+   next();                          // so in flash.ejs we well also creck the arrat.length
+ })
+   
+  
+
+//after this next() will call the "/listings" (ejs file is index.ejs)
+//so we will display the message at index.ejs
+  
 
 app.use("/listings",listings); //it will use /listings route of listings.js
 app.use("/listings/:id/reviews",reviews);

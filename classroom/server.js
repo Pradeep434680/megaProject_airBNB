@@ -3,7 +3,19 @@ const express = require("express");
  const users = require("./routes/user.js")
  const posts = require("./routes/posts.js");
  const cookieParser = require("cookie-parser");
+ const path = require("path");
  const session = require("express-session");
+ const flash = require("connect-flash");
+
+ app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+
+ const sessionOptions = {
+    secret:"mysupersecretstring", 
+    resave:false,
+    saveUninitialized:true
+};
 
 // //cookie-parser is a middleware, now all req will go through cookie parser
 // app.use(cookieParser("secretcode"));
@@ -11,7 +23,7 @@ const express = require("express");
 // //there are two type of cookies (i)=>signed,(ii)=>unsigned
 
 // app.get("/getsignedcookie",(req,res)=>{
-//     res.cookie("mase in","india", {signed:true})
+//     res.cookie("mase in","india", {signed:true})//==>signed cookie
 //     res.send("signed cookie send"); 
 
 // })
@@ -52,7 +64,8 @@ const express = require("express");
 //  app.use("/posts",posts);
  
 
-app.use(session({secret:"mysupersecretstring", resave:false,saveUninitialized:true}));
+app.use(session(sessionOptions));
+app.use(flash());
 
 // express sessions
 app.get("/test",(req,res)=>{
@@ -60,17 +73,51 @@ app.get("/test",(req,res)=>{
 })              
 
 // IT WILL count that how much time the call is called 
-app.get("/reqcount",(req,res)=>{
-    if(req.session.count){
-        req.session.count++;
-    }
-    else{
-        req.session.count=1;
-    }
+// app.get("/reqcount",(req,res)=>{
+//     if(req.session.count){
+//         req.session.count++;
+//     }
+//     else{
+//         req.session.count=1;
+//     }
 
-    res.send(`you sent a requesr ${req.session.count} times`);
+//     res.send(`you sent a requesr ${req.session.count} times`);
+// })
+
+app.use((req,res,next)=>{
+    res.locals.successMsg = req.flash("success");
+    res.locals.errorMsg = req.flash("error");
+    next()
+}) 
+
+app.get("/register",(req,res)=>{
+    let {name="anonymous"} = req.query;
+    req.session.name = name;//now it will store info in req.session 
+   console.log(req.session.name);
+   if(name ==="anonymous"){
+        req.flash("error","user not registered")
+   }
+   else{
+
+       req.flash("success","user registered successfully"); // to give a alert send the session.flash() to page.ejs
+   }
+   res.redirect("/hello")
+})    
+
+app.get("/hello",(req,res)=>{
+    // console.log( req.session.name);  // we can excess it here also
+    // res.send(`hello ${ req.session.name}`);
+    // console.log(req.flash('success')); //==> [ 'user registered successfully' ]
+    // res.render("page.ejs",{name: req.session.name,msg:req.flash("success")}); // flash message is one time message
+
+    // res.locals.successMsg = req.flash("success");  // these are doing the work of{ msg:req.flash("success")}
+    // res.locals.errorMsg = req.flash("error");     // ye data ko page.ejs tk pahucha rhe hai
+    
+    ///at the place of these we will make middlewares upperside
+    res.render("page.ejs",{name: req.session.name})
 })
  
+
 app.listen(3030,()=>{
     console.log("server is started");
 })
