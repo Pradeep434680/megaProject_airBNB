@@ -7,14 +7,18 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
  
 const ExpressError= require("./utils/ExpressError.js");
  
 const Review = require("./models/review.js");
 
 
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js")
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js")
+const userRouter = require("./routes/user.js")
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -53,6 +57,13 @@ app.get("/", (req, res) => {
 
 app.use(session(sessionOptions));
 app.use(flash());
+//initialized for possport
+ app.use(passport.initialize());
+ app.use(passport.session());
+ passport.use(new LocalStrategy(User.authenticate())); //authenticate() Generates a function that is used in Passport's LocalStrategy
+passport.serializeUser(User.serializeUser());//serializeUser() Generates a function that is used by Passport to serialize users into the session
+passport.deserializeUser(User.deserializeUser());//deserializeUser() Generates a function that is used by Passport to deserialize users into the session
+
 
 //  res.locals.success 
 //
@@ -62,15 +73,27 @@ app.use((req,res,next)=>{
   //  console.log(res.locals.success);// if i do not create a new listing the the value of this wil be empty array
    next();                          // so in flash.ejs we well also creck the arrat.length
  })
-   
+
+ //user demo
+//  app.get("/demouser",async(req,res)=>{
+//   let fakeUser = new User({
+//     email:"student@gmail.com",
+//     username:"pradeep kumar"
+//   })
+//  let registeredUser = await User.register(fakeUser,"helloworld"); //register(user, password, cb) Convenience method to register a new user instance with a given password. Checks if username is
+// //  console.log(registeredUser);
+//  res.send(registeredUser);
+// })
   
 
 //after this next() will call the "/listings" (ejs file is index.ejs)
 //so we will display the message at index.ejs
   
 
-app.use("/listings",listings); //it will use /listings route of listings.js
-app.use("/listings/:id/reviews",reviews);
+app.use("/listings",listingRouter); //it will use /listings route of listings.js
+app.use("/listings/:id/reviews",reviewRouter);
+app.use("/",userRouter);
+
 
 
 // it will be call if above route is not matched
