@@ -1,27 +1,28 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const Listing = require("../models/listing.js");
-const {reviewSchema} = require("../schema.js");
+// const {reviewSchema} = require("../schema.js");
 const wrapAsync = require("../utils/wrapAsyns.js");
 const ExpressError= require("../utils/ExpressError.js");
 const Review = require("../models/review.js")
+ const { validateReview} = require("../middleware.js")
 
 
 
-// validation for review schema
+// // validation for review schema
 
-const validateReview = (req,res,next)=>{
+// const validateReview = (req,res,next)=>{
   
-    let {error} = reviewSchema.validate(req.body)   // it will check out Joi schema
-    if( error){
-      let errorMsg = error.details.map((el)=>el.message.join(","));//there are many type of errors to show all type of erros
-      throw new ExpressError(404,errorMsg)                                                            //now we will send errorMsg
-      // throw new ExpressError(404, error)  // error have a lot info  
-    }                                       
-    else{
-      next()
-    }
-  }
+//     let {error} = reviewSchema.validate(req.body)   // it will check out Joi schema
+//     if( error){
+//       let errorMsg = error.details.map((el)=>el.message.join(","));//there are many type of errors to show all type of erros
+//       throw new ExpressError(404,errorMsg)                                                            //now we will send errorMsg
+//       // throw new ExpressError(404, error)  // error have a lot info  
+//     }                                       
+//     else{
+//       next()
+//     }
+//   }
 
 
 //Review route

@@ -52,7 +52,7 @@ const sessionOptions = {
 
 // Root route
 app.get("/", (req, res) => {
-  res.send("Hi, I am root");
+  res.send("this is the home page");
 });
 
 app.use(session(sessionOptions));
@@ -70,6 +70,7 @@ passport.deserializeUser(User.deserializeUser());//deserializeUser() Generates a
 app.use((req,res,next)=>{
    res.locals.success = req.flash("success");
    res.locals.error = req.flash("error");
+   res.locals.currUser = req.user;
   //  console.log(res.locals.success);// if i do not create a new listing the the value of this wil be empty array
    next();                          // so in flash.ejs we well also creck the arrat.length
  })

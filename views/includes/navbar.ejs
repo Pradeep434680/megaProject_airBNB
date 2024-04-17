@@ -9,8 +9,22 @@
         <a class="nav-link  " aria-current="page" href="/">Home</a>
         <a class="nav-link" href="/listings">All listings</a>
         <a class="nav-link" href="/listings/new">Add new listing</a>
-         
       </div>
+
+      <!-- req.user cannot be excess here directly 
+      it will store in locals -->
+      <div class="navbar-nav ms-auto">
+        <% if ( ! currUser){%>  
+          <a class="nav-link  " aria-current="page" href="/signup">Sign up</a>
+          <a class="nav-link" href="/login">Login</a>
+          <% }%>
+          <%if(currUser ){%>
+            <a class="nav-link" href="/logout">Logout</a>
+            
+          <%}%>
+
+      </div>
+         
     </div>
   </div>
 </nav>
