@@ -71,6 +71,7 @@ app.use((req,res,next)=>{
    res.locals.success = req.flash("success");
    res.locals.error = req.flash("error");
    res.locals.currUser = req.user;
+  //  console.log(` this is the currUser id :${res.locals.currUser}`);
   //  console.log(res.locals.success);// if i do not create a new listing the the value of this wil be empty array
    next();                          // so in flash.ejs we well also creck the arrat.length
  })

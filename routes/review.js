@@ -5,7 +5,8 @@ const Listing = require("../models/listing.js");
 const wrapAsync = require("../utils/wrapAsyns.js");
 const ExpressError= require("../utils/ExpressError.js");
 const Review = require("../models/review.js")
- const { validateReview} = require("../middleware.js")
+ const { validateReview, isLoggedIn,isReviewAuthor} = require("../middleware.js");
+ const reviewController = require("../controllers/review.js");
 
 
 
@@ -28,34 +29,15 @@ const Review = require("../models/review.js")
 //Review route
  //when we go on /listings/:id ==> we reach on show.ejs
  // And we will see all reviews on the show.ejs so the route will /listings/:id/reviews
- router.post(
-    "/",
-    validateReview,
-    wrapAsync( async(req,res)=>{
-    let listing =await  Listing.findById(req.params.id); //extract the listing by id
-    let newReview = new Review(req.body.review);  //info from form store i=in newReview
-     
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-    req.flash("success","New Review Created");
-    res.redirect( `/listings/${listing._id}`);
-  }))
+ router.post("/",isLoggedIn,validateReview,
+    wrapAsync(reviewController.createReview))
    
   
   
   //review delete route
   
-  router.delete(
-    "/:reviewId",
-    wrapAsync( async(req,res)=>{
-      let {id , reviewId} = req.params;
-      await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}}) // it will pull the whole object form the reviews array and delete it from database.
-      await Review.findByIdAndDelete(reviewId);  //it will delete card
-      req.flash("success","Review Deleted ");
-      res.redirect(`/listings/${id}`);
-    }));
+  router.delete("/:reviewId",isLoggedIn,isReviewAuthor,
+    wrapAsync(reviewController.destroyReview));
      
   
 
